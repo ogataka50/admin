@@ -23,8 +23,6 @@ class Controller_Admin extends Controller
 {
 
 	/**
-	 * The basic welcome message
-	 *
 	 * @access  public
 	 * @return  Response
 	 */
@@ -43,4 +41,15 @@ class Controller_Admin extends Controller
 		$tmpl['dayly_list']		= $dayly_list;
 		return Response::forge(View::forge('admin/index', $tmpl));
 	}
+
+	public function action_api_dayly()
+	{
+		$target_month	= 8;
+		$dayly_list		= Model_Dayly::get_dayly_list($target_month);
+		//Debug::dump($dayly_list);
+
+		$dayly_list = json_encode($dayly_list);
+		echo $dayly_list;
+	}
+
 }

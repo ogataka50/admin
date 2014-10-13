@@ -5,6 +5,7 @@
 
 	<!-- Right side column. Contains the navbar and content of the page -->
 	<aside class="right-side">
+		<button id="reload">更新</button>
         <canvas id="line" width="800" height="400"></canvas>
 		<!-- Content Header (Page header) -->
 		<section class="content-header">
@@ -61,40 +62,59 @@
 
 <script>
 jQuery(function(){
-var data = {
-    labels: new Array(),
-    datasets: [
-        {
-            label: "My First dataset",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: new Array()
-        },
-        {
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: new Array()
-        }
-    ]
-};
-console.log(data);
+	var data = {
+	    labels: new Array(),
+	    datasets: [
+	        {
+	            label: "My First dataset",
+	            fillColor: "rgba(220,220,220,0.2)",
+	            strokeColor: "rgba(220,220,220,1)",
+	            pointColor: "rgba(220,220,220,1)",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(220,220,220,1)",
+	            data: new Array()
+	        },
+	        {
+	            label: "My Second dataset",
+	            fillColor: "rgba(151,187,205,0.2)",
+	            strokeColor: "rgba(151,187,205,1)",
+	            pointColor: "rgba(151,187,205,1)",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(151,187,205,1)",
+	            data: new Array()
+	        }
+	    ]
+	};
 
-<?php foreach ($dayly_list as $key => $val): ?>
-data["datasets"][0]["data"].push(<?php echo $val["value_1"]?>);
-data["datasets"][1]["data"].push(<?php echo $val["value_2"]?>);
-data["labels"].push(<?php echo $val['day'] ?> + '日');
-<?php endforeach ?>
-console.log(data);
+	<?php foreach ($dayly_list as $key => $val): ?>
+	data["datasets"][0]["data"].push(<?php echo $val["value_1"]?>);
+	data["datasets"][1]["data"].push(<?php echo $val["value_2"]?>);
+	data["labels"].push(<?php echo $val['day'] ?> + '日');
+	<?php endforeach ?>
+
 	var myLine = new Chart(document.getElementById("line").getContext("2d")).Line(data);
+
+	jQuery("#reload").click(function(){
+		myLine.destroy();
+
+		jQuery.ajax({
+			url: 'http://dev.admin.com/admin/api_dayly',
+			dataType: 'json',
+			success: function(res_data){
+				data["labels"] = new Array();
+				data["datasets"][0]["data"] = new Array();
+				data["datasets"][1]["data"] = new Array();
+				for(var i = 0; i < res_data.length; i++){
+					data["datasets"][0]["data"].push(res_data[i]["value_1"]);
+					data["datasets"][1]["data"].push(res_data[i]["value_2"]);
+					data["labels"].push(res_data[i]["day"] + '日');
+				}
+				var myLine = new Chart(document.getElementById("line").getContext("2d")).Line(data);
+			}
+		});
+	});
 });
 </script>
 <?php include APPPATH . '/views/common/footer.php'; ?>

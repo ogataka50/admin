@@ -8,7 +8,7 @@ class Model_Dayly extends Model
 	{
 		$result = DB::select()
 				->from(self::TABLE_NAME)
-				->where('month', '<=', $month)
+				->where('month', $month)
 				->execute()
 				->as_array();
 
