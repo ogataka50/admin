@@ -30,12 +30,17 @@ class Controller_Admin extends Controller
 	 */
 	public function action_index()
 	{
-		$month = date('Ym');
+		$month		= date('Ym');
+		$month_list	= Model_Monthly::get_monthly_list($month);
 
-		$month_list = Model_Monthly::get_monthly_list($month);
+		$target_month	= 7;
+		$dayly_list		= Model_Dayly::get_dayly_list($target_month);
+		//Debug::dump($dayly_list);
 
-		//Debug::dump($month_list);
-
-		return Response::forge(View::forge('admin/index'));
+		$tmpl['month']			= $month;
+		$tmpl['month_list']		= $month_list;
+		$tmpl['target_month']	= $target_month;
+		$tmpl['dayly_list']		= $dayly_list;
+		return Response::forge(View::forge('admin/index', $tmpl));
 	}
 }
