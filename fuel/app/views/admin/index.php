@@ -114,6 +114,8 @@ jQuery(function(){
 					data["labels"].push(res_data[i]["day"] + '日');
 
 					$('#target').append( getRowData(res_data[i]));
+					$( '#target tr:last' ).find('td').wrapInner('<div style="display: none;" />');
+    				$( '#target tr:last' ).find('td > div').slideDown( 500 );
 				}
 				var myLine = new Chart(document.getElementById("line").getContext("2d")).Line(data);
 
