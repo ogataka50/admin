@@ -28,7 +28,7 @@
 						</div><!-- /.box-header -->
 						<div class="box-body table-responsive">
 						<?php if(count($dayly_list)): ?>
-							<table class="table table-bordered table-hover">
+							<table id="target" class="table table-bordered table-hover">
 								<thead>
 								<tr>
 									<th>日付</th>
@@ -98,6 +98,8 @@ jQuery(function(){
 
 	jQuery("#reload").click(function(){
 		myLine.destroy();
+		
+		$('#target').find("tr:gt(0)").remove();
 
 		jQuery.ajax({
 			url: 'http://dev.admin.com/admin/api_dayly',
@@ -110,11 +112,21 @@ jQuery(function(){
 					data["datasets"][0]["data"].push(res_data[i]["value_1"]);
 					data["datasets"][1]["data"].push(res_data[i]["value_2"]);
 					data["labels"].push(res_data[i]["day"] + '日');
+
+					$('#target').append( getRowData(res_data[i]));
 				}
 				var myLine = new Chart(document.getElementById("line").getContext("2d")).Line(data);
+
+
 			}
 		});
 	});
+
+	var getRowData = function(row){
+		return "<tr><td>" + row['date'] + "</td><td>" + row['value_1'] + "</td><td>" + row['value_2'] + "</td><td>" + row['value_3'] + "</td></tr>";
+	}
+
+
 });
 </script>
 <?php include APPPATH . '/views/common/footer.php'; ?>
