@@ -26,5 +26,6 @@
 
         <?php echo Asset::js('lib/Chart/Chart.min.js'); ?>
 
+		<?php echo Asset::js('admin.js'); ?>
     </body>
 </html>
