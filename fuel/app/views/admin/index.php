@@ -2,30 +2,39 @@
 <?php include APPPATH . '/views/common/menu.php'; ?>
 
 <div>
-
 	<!-- Right side column. Contains the navbar and content of the page -->
 	<aside class="right-side">
-		<button id="reload">更新</button>
-        <form id="mod_date">
+		<form id="mod_date">
 			<select name='from_year'>
-                <option value='2014'>2014</option>
-                <option value='2015'>2015</option>
-             </select>
-            <select name='from_month'>
-                <option value='1'>1</option>
-                <option value='2'>2</option>
-             </select>
-            <select name='to_year'>
-                <option value='2014'>2014</option>
-                <option value='2015'>2015</option>
-             </select>
-            <select name='to_month'>
-                <option value='1'>1</option>
-                <option value='2'>2</option>
-             </select>
-			<button id='mod'>あああ</button>
+				<option value='2014'>2014</option>
+				<option value='2015'>2015</option>
+			</select>
+			<select name='from_month'>
+				<?php for($i=1; $i <= 12; $i++ ): ?>
+					<option value="<?php echo $i ?>" <?php if($i == $from_month): ?>selected<?php endif; ?>><?php echo $i ?></option>
+				<?php endfor; ?>
+			 </select>
+			<select name='from_day'>
+				<?php for($i=1; $i <= 31; $i++ ): ?>
+					<option value="<?php echo $i ?>" <?php if($i == $from_day): ?>selected<?php endif; ?>><?php echo $i ?></option>
+				<?php endfor; ?>
+			</select>
+			<select name='to_year'>
+				<option value='2014'>2014</option>
+				<option value='2015'>2015</option>
+			 </select>
+			<select name='to_month'>
+				<?php for($i=1; $i <= 12; $i++ ): ?>
+					<option value="<?php echo $i ?>" <?php if($i == $to_month): ?>selected<?php endif; ?>><?php echo $i ?></option>
+				<?php endfor; ?>
+			</select>
+			<select name='to_day'>
+				<?php for($i=1; $i <= 31; $i++ ): ?>
+					<option value="<?php echo $i ?>" <?php if($i == $to_day): ?>selected<?php endif; ?>><?php echo $i ?></option>
+				<?php endfor; ?>
+			 </select>
+			<button id='mod'>変更</button>
 		</form>
-		<canvas id="line" width="800" height="400"></canvas>
 		<!-- Content Header (Page header) -->
 		<section class="content-header">
 			<h1>
@@ -39,6 +48,8 @@
 		</section>
 		<!-- Main content -->
 		<section class="content">
+			<canvas id="lineChart" width="800" height="400"></canvas>
+			<canvas id="barChart" width="800" height="400"></canvas>
 			<div class="row">
 				<div class="col-xs-4">
 					<div class="box">
@@ -57,14 +68,6 @@
 								</tr>
 								</thead>
 								<tbody>
-								<?php foreach ($dayly_list as $key => $val): ?>
-									<tr>
-										<td><?php echo $val['date'] ?></td>
-										<td><?php echo $val['value_1'] ?></td>
-										<td><?php echo $val['value_2'] ?></td>
-										<td><?php echo $val['value_3'] ?></td>
-									</tr>
-								<?php endforeach ?>
 								</tbody>
 							</table>
 						<?php else: ?>
@@ -78,76 +81,4 @@
 	</aside><!-- /.right-side -->
 </div><!-- ./wrapper -->
 
-
-<script>
-jQuery(function(){
-	var data = {
-	    labels: new Array(),
-	    datasets: [
-	        {
-	            label: "My First dataset",
-	            fillColor: "rgba(220,220,220,0.2)",
-	            strokeColor: "rgba(220,220,220,1)",
-	            pointColor: "rgba(220,220,220,1)",
-	            pointStrokeColor: "#fff",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(220,220,220,1)",
-	            data: new Array()
-	        },
-	        {
-	            label: "My Second dataset",
-	            fillColor: "rgba(151,187,205,0.2)",
-	            strokeColor: "rgba(151,187,205,1)",
-	            pointColor: "rgba(151,187,205,1)",
-	            pointStrokeColor: "#fff",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(151,187,205,1)",
-	            data: new Array()
-	        }
-	    ]
-	};
-
-	<?php foreach ($dayly_list as $key => $val): ?>
-	data["datasets"][0]["data"].push(<?php echo $val["value_1"]?>);
-	data["datasets"][1]["data"].push(<?php echo $val["value_2"]?>);
-	data["labels"].push(<?php echo $val['day'] ?> + '日');
-	<?php endforeach ?>
-
-	var myLine = new Chart(document.getElementById("line").getContext("2d")).Line(data);
-
-	jQuery("#reload").click(function(){
-		myLine.destroy();
-		
-		$('#target').find("tr:gt(0)").remove();
-
-		jQuery.ajax({
-			url: 'http://dev.admin.com/admin/api_dayly',
-			dataType: 'json',
-			success: function(res_data){
-				data["labels"] = new Array();
-				data["datasets"][0]["data"] = new Array();
-				data["datasets"][1]["data"] = new Array();
-				for(var i = 0; i < res_data.length; i++){
-					data["datasets"][0]["data"].push(res_data[i]["value_1"]);
-					data["datasets"][1]["data"].push(res_data[i]["value_2"]);
-					data["labels"].push(res_data[i]["day"] + '日');
-
-					$('#target').append( getRowData(res_data[i]));
-					$( '#target tr:last' ).find('td').wrapInner('<div style="display: none;" />');
-    				$( '#target tr:last' ).find('td > div').slideDown( 500 );
-				}
-				var myLine = new Chart(document.getElementById("line").getContext("2d")).Line(data);
-
-
-			}
-		});
-	});
-
-	var getRowData = function(row){
-		return "<tr><td>" + row['date'] + "</td><td>" + row['value_1'] + "</td><td>" + row['value_2'] + "</td><td>" + row['value_3'] + "</td></tr>";
-	}
-
-
-});
-</script>
 <?php include APPPATH . '/views/common/footer.php'; ?>

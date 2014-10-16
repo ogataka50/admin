@@ -28,24 +28,39 @@ class Controller_Admin extends Controller
 	 */
 	public function action_index()
 	{
-		$month		= date('Ym');
-		$month_list	= Model_Monthly::get_monthly_list($month);
+		$from	= date('Y-m');
+		$to		= date('Y-m', strtotime(date('Y-m'). '+1 month'));
 
-		$target_month	= 7;
-		$dayly_list		= Model_Dayly::get_dayly_list($target_month);
-		//Debug::dump($dayly_list);
+		$from_year	= date('Y');
+		$from_month	= date('m');
+		$from_day	= 1;
+		$to_year	= date('Y', strtotime(date('Y-m'). '+1 month'));
+		$to_month	= date('m', strtotime(date('Y-m'). '+1 month'));
+		$to_day		= 1;
 
-		$tmpl['month']			= $month;
-		$tmpl['month_list']		= $month_list;
-		$tmpl['target_month']	= $target_month;
+		$dayly_list		= Model_Dayly::get_dayly_list_between($from, $to);
+		//Debug::dump($from);
+
+
+		$tmpl['from']			= $from;
+		$tmpl['to']				= $to;
+		$tmpl['from_year']		= $from_year;
+		$tmpl['from_month']		= $from_month;
+		$tmpl['from_day']		= $from_day;
+		$tmpl['to_year']		= $to_year;
+		$tmpl['to_month']		= $to_month;
+		$tmpl['to_day']			= $to_day;
 		$tmpl['dayly_list']		= $dayly_list;
 		return Response::forge(View::forge('admin/index', $tmpl));
 	}
 
 	public function action_api_dayly()
 	{
-		$target_month	= 8;
-		$dayly_list		= Model_Dayly::get_dayly_list($target_month);
+		Log::debug(var_export($_POST, true));
+		$from = Input::post('from_year') . '-' . sprintf("%02d", Input::post('from_month')) . '-' . Input::post('from_day');
+		$to = Input::post('to_year') . '-' . sprintf("%02d", Input::post('to_month')) . '-' . Input::post('tp_day');
+
+		$dayly_list		= Model_Dayly::get_dayly_list_between($from, $to);
 		//Debug::dump($dayly_list);
 
 		$dayly_list = json_encode($dayly_list);
