@@ -57,9 +57,12 @@ class Controller_Admin extends Controller
 	public function action_api_dayly()
 	{
 		Log::debug(var_export($_POST, true));
-		$from = Input::post('from_year') . '-' . sprintf("%02d", Input::post('from_month')) . '-' . Input::post('from_day');
-		$to = Input::post('to_year') . '-' . sprintf("%02d", Input::post('to_month')) . '-' . Input::post('tp_day');
+		
+		$from = Input::post('from_year') . '-' . sprintf("%02d", Input::post('from_month')) . '-' . sprintf("%02d", Input::post('from_day'));
+		$to = Input::post('to_year') . '-' . sprintf("%02d", Input::post('to_month')) . '-' . sprintf("%02d", Input::post('to_day'));
 
+		Log::debug($from);
+		Log::debug($to);
 		$dayly_list		= Model_Dayly::get_dayly_list_between($from, $to);
 		//Debug::dump($dayly_list);
 
